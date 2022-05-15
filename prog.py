@@ -153,14 +153,14 @@ def predict():
     if not testdata_dir:
         print('Make sure test data directory is selected')
     else:
-        threshold(testdata_dir, thresh)
-        excentricity = fitellipse(testdata_dir)
+        threshold(testdata_dir, thresh, save=False)
+        excentricity = fitellipse(testdata_dir, save=False)
 
         img_list = []
         for file in os.listdir(testdata_dir):
             if file.endswith(".jpg"):
                 img_list.append(file)
-        
+
         nbr = len(img_list)
         with open('result.csv', 'a', newline='') as f:
             f.truncate(0)

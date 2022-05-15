@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 
-def threshold(img_dir, thresh):
+def threshold(img_dir, thresh, save=True):
 
     os.makedirs(img_dir+'thresholded/', exist_ok=True)
 
@@ -15,6 +15,8 @@ def threshold(img_dir, thresh):
         if file.endswith(".jpg"):
             img_list.append(img_dir+file)
 
+    thresholded_img_list = []
+
     for salade in tqdm(img_list, desc="Thresholding"):
         img = cv.imread(salade, cv.IMREAD_GRAYSCALE)
         fname = salade.split('/')[-1]
@@ -22,12 +24,16 @@ def threshold(img_dir, thresh):
         thresholded_img = cv.threshold(img, thresh, 255, cv.THRESH_BINARY)[1]
         thresholded_img = cv.dilate(thresholded_img, None, iterations=2)
         thresholded_img = cv.erode(thresholded_img, None, iterations=14)
+        thresholded_img_list.append(thresholded_img)
 
         # save thresholded image
-        cv.imwrite(img_dir+'/thresholded/'+fname, thresholded_img)
+        if save:
+            cv.imwrite(img_dir+'/thresholded/'+fname, thresholded_img)
+
+    return thresholded_img_list
 
 
-def fitellipse(img_dir):
+def fitellipse(img_dir, save=True):
 
     os.makedirs(img_dir+'fitellipse/', exist_ok=True)
 
@@ -54,8 +60,10 @@ def fitellipse(img_dir):
         excentricite.append((1-a**2/b**2)**0.5)
         # draw the ellipse
         cv.ellipse(img, ellipse, (0, 255, 0), 15)
-        # save the image
-        cv.imwrite(img_dir+'/fitellipse/'+fname, img)
+
+        if save:
+            # save the image
+            cv.imwrite(img_dir+'/fitellipse/'+fname, img)
 
     return excentricite
 
@@ -98,7 +106,7 @@ def optimal_threshold(faciee_dir, pas_faciee_dir):
                 continue
 
         return excentricite
-    
+
     mean_ex_faciee = []
     mean_ex_pas_faciee = []
 
